@@ -222,10 +222,11 @@ def stats(Dataframe):
 
     Dataframe.boxplot(column=['real_world', 'thinking', 'no_thinking'])
     plt.title("Box plot of real world vs. model data")
+    plt.ylabel("Distance / metres")
 
     if len(Dataframe['real_world'].tolist()) > 45:
         string = "90 Transverse bars"
     else:
         string = "45 Transverse bars"
 
-    return print(string), plt.show(), print(f"Summary Statistics:\n{stats}")
+    return print(string), plt.show(), print(f"\nSummary Statistics:\n\n{stats}")
