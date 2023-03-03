@@ -112,8 +112,8 @@ def plot_subgraphs_dk(no_thinking_time_list: list, thinking_time_list: list, rea
     fig.subplots_adjust(wspace=0.3)
     fig.suptitle("Distance between each successive $d_k$", fontsize='large')
 
-    filename = f"sidebyside_dk_n={n}.png"
-    plt.savefig(filename)
+    #filename = f"sidebyside_dk_n={n}.png"
+    #plt.savefig(filename)
 
     return plt.show()
 
@@ -138,7 +138,7 @@ def plot_graph_dk(model_list: list, real_world_list: list) -> plt:
     ax.set_xticks(x_ticks)
     ax.legend(["Model", "Real World"])
 
-    filename = f"single_dk_n={n}.png"
-    plt.savefig(filename)
+    #filename = f"single_dk_n={n}.png"
+    #plt.savefig(filename)
 
     return plt.show()
