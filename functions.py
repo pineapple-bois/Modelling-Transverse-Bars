@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 
 def metres_per_second(u, v):
     initial_velocity = round(u * 0.44704, 3)
@@ -142,3 +143,89 @@ def plot_graph_dk(model_list: list, real_world_list: list) -> plt:
     #plt.savefig(filename)
 
     return plt.show()
+
+
+def velocity_time_graph(u: float, v: float, D: float, n: int, thinking_time=0.0, use_thinking_distance=False):
+    """
+    This function creates a velocity time graph
+    Takes parameters;
+    u = initial velocity in metres per second
+    v = final velocity in metres per second
+    D = total distance in metres
+    n = number of bars
+    thinking_time in seconds
+    use_thinking_distance, set to false for no thinking time
+
+    Returns velocity/time graph
+    """
+
+    # Equations of motion
+    a = (v**2 - u**2) / (2*D)
+    t = (v - u) / a
+    delta_t = t / (n-1)
+    x_0_bars = thinking_time / delta_t
+    n_0 = int(round(x_0_bars))
+
+    for i in range(1,n):
+        if use_thinking_distance:
+            v_list_const = [u for n in range(0,n_0)]
+            v_list_acc = [u + a * delta_t * n for n in range(n_0, n)]
+            vn = v_list_const + v_list_acc
+            vn_values = [round(x, 3) for x in vn]
+        else:
+            vn_values = [u + a * delta_t * n for n in range(0, n)]
+
+    vn_values = [round(x, 3) for x in vn_values]
+
+    num_points = len(vn_values)
+    time_list = [delta_t * n for n in range(num_points)]
+
+    # plot d over time
+    if use_thinking_distance:
+        string = f"With Thinking Time, $n={n}$"
+    else:
+        string = f"No Thinking Time, $n={n}$"
+    plt.plot(time_list, vn_values)
+    plt.xlabel('Time / s')
+    plt.ylabel('Velocity / $\mathrm{m\ s{^{-1}}}$')
+    plt.title(f'Velocity vs. Time\n{string}')
+    if use_thinking_distance:
+        title = f"vel_time_thinking_n={n}"
+    else:
+        title = f"vel_time_no_thinking_n={n}"
+
+    #plt.savefig(f'{title}.png')
+
+
+    return plt.show()
+
+
+def dataframe(real_world_list: list, thinking_list: list, no_thinking_list: list):
+    """
+
+    """
+
+    d_k = [f"d{i}" for i in range(1, len(real_world_list)+1)]
+    dk_df = pd.DataFrame({'d_k': d_k, 'real_world': real_world_list,
+                          'thinking': thinking_list, 'no_thinking': no_thinking_list})
+
+    return dk_df
+
+
+def stats(Dataframe):
+    """
+    Take a pandas DataFrame as input
+
+    returns: summary statistics and boxplot
+    """
+    stats = Dataframe.describe()
+
+    Dataframe.boxplot(column=['real_world', 'thinking', 'no_thinking'])
+    plt.title("Box plot of real world vs. model data")
+
+    if len(Dataframe['real_world'].tolist()) > 45:
+        string = "90 Transverse bars"
+    else:
+        string = "45 Transverse bars"
+
+    return print(string), plt.show(), print(f"Summary Statistics:\n{stats}")
