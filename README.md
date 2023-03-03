@@ -8,7 +8,7 @@
 
 Below is an example of the problem being modelled
 
-<img alt="brent_cross_M1_A406.png" src="brent_cross_M1_A406.png"/>
+![brent_cross_M1_A406.png](brent_cross_M1_A406.png)
 
 This is a view from [Google Earth](https://earth.google.com/web/search/Brent+Cross+Shopping+Centre,+Prince+Charles+Drive,+London/@51.57511866,-0.23056827,46.91448907a,949.13400445d,35y,-38.34416279h,43.82222061t,0r/data=CqQBGnoSdAolMHg0ODc2MTBlN2RmNDA2NjVkOjB4NjJhMDI5MGVmMDA3ZjIwMxnnlgy2x8lJQCH5tgXwu47Mvyo5QnJlbnQgQ3Jvc3MgU2hvcHBpbmcgQ2VudHJlLCBQcmluY2UgQ2hhcmxlcyBEcml2ZSwgTG9uZG9uGAEgASImCiQJHTMsqqfMSUARuN8LgBTKSUAZADO56CLFxb8hyJaA9pO4yb8) of the M1/A406 junction in North London
 
