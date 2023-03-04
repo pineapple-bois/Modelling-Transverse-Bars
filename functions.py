@@ -111,7 +111,7 @@ def plot_subgraphs_dk(no_thinking_time_list: list, thinking_time_list: list, rea
     axs[1].legend(['Model', 'Real World'])
 
     fig.subplots_adjust(wspace=0.3)
-    fig.suptitle("Distance between each successive $d_k$", fontsize='large')
+    fig.suptitle("Distance $d_k$ between each successive $D_n$", fontsize='large')
 
     #filename = f"sidebyside_dk_n={n}.png"
     #plt.savefig(filename)
@@ -132,7 +132,7 @@ def plot_graph_dk(model_list: list, real_world_list: list) -> plt:
     n = len(model_list) + 1
     ax.plot(np.arange(1, n), model_list)
     ax.plot(np.arange(1, n), real_world_list)
-    ax.set_title(f"Distance between each successive $d_k$\n$n={n}$", fontsize="large")
+    ax.set_title(f"Distance $d_k% between each successive $D_n$\n$n={n}$", fontsize="large")
     ax.set_xlabel("$d_k$")
     ax.set_ylabel("Distance between consecutive markers / m")
     x_ticks = np.arange(0, n, 10)
@@ -141,6 +141,96 @@ def plot_graph_dk(model_list: list, real_world_list: list) -> plt:
 
     #filename = f"single_dk_n={n}.png"
     #plt.savefig(filename)
+
+    return plt.show()
+
+def get_delta_t(u: float, v: float, D: float,
+                n: int, thinking_time=0.0, use_thinking_distance=False):
+    """
+    Takes similar parameters to calculate_distances function
+    returns delta_t's
+    delta_t2 = 0.0 if use_thinking_distance = default = False
+    """
+    x_0 = u * thinking_time
+    a = (v**2 - u**2) / (2*D)
+    t = (v - u) / a
+    delta_t1 = t / (n-1)
+    x_0_bars = thinking_time / delta_t1
+    n_0 = int(round(x_0_bars))
+
+    if use_thinking_distance:
+        d_remaining = D - x_0
+        a2 = (v**2 - u**2) / (2*d_remaining)
+        t2 = (v - u) / a2
+        delta_t2 = t2 / (n-(n_0+1))
+    else:
+        delta_t2 = 0.0
+
+    delta_t1 = round(delta_t1, 6)
+    delta_t2 = round(delta_t2, 6)
+
+    print(f"Delta_t1: {delta_t1}\nDelta_t2: {delta_t2}")
+    return delta_t1, delta_t2
+
+
+def distance_time_graph(u: float, v: float, D: float, n: int,
+                 thinking_time=0.0, use_thinking_distance=False):
+    """
+        Takes parameters;
+    u = initial velocity in metres per second
+    v = final velocity in metres per second
+    D = total distance in metres
+    n = number of bars
+    thinking_time in seconds
+    use_thinking_distance, set to false for no thinking time
+    delta_t2 = 0.0 if use_thinking_distance = default = False
+
+    returns list of 2D vectors
+    """
+    distances_list = calculate_distances(u, v, D, n, thinking_time, use_thinking_distance)
+    graph_points = []
+
+    n = len(distances_list)
+    x_0 = u * thinking_time
+    a = (v**2 - u**2) / (2*D)
+    t = (v - u) / a
+    delta_t1 = t / (n-1)
+    x_0_bars = thinking_time / delta_t1
+    n_0 = int(round(x_0_bars))
+
+    if use_thinking_distance:
+        d_remaining = D - x_0
+        a2 = (v**2 - u**2) / (2*d_remaining)
+        t2 = (v - u) / a2
+        delta_t2 = t2 / (n-(n_0+1))
+    else:
+        delta_t2 = 0.0
+
+    for i in range(n):
+        if i <= n_0:
+            t_i = round(i * delta_t1, 3)
+        else:
+            if use_thinking_distance:
+                t_i = round((n_0 * delta_t1) + ((i - n_0) * delta_t2), 3)
+            else:
+                t_i = round(i * delta_t1, 3)
+        graph_points.append([t_i, distances_list[i]])
+        if i == n_0 and use_thinking_distance:
+            delta_t1 = delta_t2
+
+    # Extract the time and distance values from the graph points
+    times = [point[0] for point in graph_points]
+    distances = [point[1] for point in graph_points]
+
+    if use_thinking_distance:
+        string = "With Thinking Time"
+    else:
+        string = "No Thinking Time"
+    # Plot the graph using the time and distance values
+    plt.plot(times, distances)
+    plt.title(f"Distance/Time Graph\n{string}, $n={n}$")
+    plt.xlabel('Time (s)')
+    plt.ylabel('Distance (m)')
 
     return plt.show()
 
@@ -162,23 +252,31 @@ def velocity_time_graph(u: float, v: float, D: float, n: int, thinking_time=0.0,
     # Equations of motion
     a = (v**2 - u**2) / (2*D)
     t = (v - u) / a
-    delta_t = t / (n-1)
-    x_0_bars = thinking_time / delta_t
+    delta_t1 = t / (n-1)
+    x_0 = u * thinking_time
+    x_0_bars = thinking_time / delta_t1
     n_0 = int(round(x_0_bars))
 
     for i in range(1,n):
         if use_thinking_distance:
+            d_remaining = D - x_0
+            a2 = (v ** 2 - u ** 2) / (2 * d_remaining)
+            t2 = (v - u) / a2
+            delta_t2 = t2 / (n - (n_0 + 1))
             v_list_const = [u for n in range(0,n_0)]
-            v_list_acc = [u + a * delta_t * n for n in range(n_0, n)]
-            vn = v_list_const + v_list_acc
-            vn_values = [round(x, 3) for x in vn]
+            v_list_acc = [u + a * delta_t2 * n for n in range(n_0, n)]
+            vn_values = v_list_const + v_list_acc
         else:
-            vn_values = [u + a * delta_t * n for n in range(0, n)]
+            vn_values = [u + a * delta_t1 * n for n in range(0, n)]
 
     vn_values = [round(x, 3) for x in vn_values]
 
     num_points = len(vn_values)
-    time_list = [delta_t * n for n in range(num_points)]
+    if use_thinking_distance:
+        time_list = [round(delta_t1 * i, 3) if i <= n_0 else round(delta_t2 * i, 3)for i in range(n)]
+    else:
+        time_list = [delta_t1 * n for n in range(num_points)]
+
 
     # plot d over time
     if use_thinking_distance:
@@ -195,7 +293,6 @@ def velocity_time_graph(u: float, v: float, D: float, n: int, thinking_time=0.0,
         title = f"vel_time_no_thinking_n={n}"
 
     #plt.savefig(f'{title}.png')
-
 
     return plt.show()
 
