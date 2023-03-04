@@ -132,7 +132,7 @@ def plot_graph_dk(model_list: list, real_world_list: list) -> plt:
     n = len(model_list) + 1
     ax.plot(np.arange(1, n), model_list)
     ax.plot(np.arange(1, n), real_world_list)
-    ax.set_title(f"Distance $d_k% between each successive $D_n$\n$n={n}$", fontsize="large")
+    ax.set_title(f"Distance $d_k$ between each successive $D_n$\n$k={n}$", fontsize="large")
     ax.set_xlabel("$d_k$")
     ax.set_ylabel("Distance between consecutive markers / m")
     x_ticks = np.arange(0, n, 10)
@@ -143,6 +143,25 @@ def plot_graph_dk(model_list: list, real_world_list: list) -> plt:
     #plt.savefig(filename)
 
     return plt.show()
+
+def plot_single_dk(model_list: list) -> plt:
+    """
+    :param model_list:
+    :return: figure object containing a single plot
+    """
+    # Create figure with a single plot
+    n = len(model_list)
+    plt.plot(np.arange(1, n+1), model_list)
+    plt.title(f"Distance $d_k$ between each successive $D_n$\n$k={n}$", fontsize="large")
+    plt.xlabel("$d_k$")
+    plt.ylabel("Distance between consecutive markers / m")
+    x_ticks = np.arange(0, n+1, 5)
+    plt.xticks(x_ticks)
+    #filename = f"single_dk_n={n}.png"
+    #plt.savefig(filename)
+
+    return plt.show()
+
 
 def get_delta_t(u: float, v: float, D: float,
                 n: int, thinking_time=0.0, use_thinking_distance=False):
@@ -232,7 +251,7 @@ def distance_time_graph(u: float, v: float, D: float, n: int,
     plt.xlabel('Time (s)')
     plt.ylabel('Distance (m)')
 
-    return plt.show()
+    return plt.show(), print(len(graph_points), graph_points)
 
 
 def velocity_time_graph(u: float, v: float, D: float, n: int, thinking_time=0.0, use_thinking_distance=False):
