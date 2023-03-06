@@ -6,7 +6,7 @@
 
 ----
 
-Below is an example of the problem being modelled
+Below is a real world implementation of the problem being modelled
 
 ![brent_cross_M1_A406.png](brent_cross_M1_A406.png)
 
